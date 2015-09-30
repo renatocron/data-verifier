@@ -467,6 +467,16 @@ sub verify {
 
         # Creat the "field" that we'll put into the result.
         my $field = Data::Verifier::Field->new;
+        
+        # if type is boolean, convert it to boolean, otherwise JSON->true can be a problem
+        if ( exists $fprof->{type} && $fprof->{type} eq 'Bool' ) {
+            if ( ref($val) eq 'ARRAY' ) {
+                $val = [ map { defined $val ? $_ ? 1 : 0 : undef } @{$val} ];    # Make a copy of the array
+            }
+            else {
+                $val = defined $val ? $val ? 1 : 0 : undef;
+            }
+        }
 
         # Save the original value.
         if(ref($val) eq 'ARRAY') {
